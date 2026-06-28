@@ -6,7 +6,7 @@ pipeline {
             steps {
                 echo 'Checking out code from GitHub...'
                 // Code is automatically fetched into the workspace by Jenkins
-                sh 'ls -la'
+               // sh 'ls -la'
             }
         }
 
