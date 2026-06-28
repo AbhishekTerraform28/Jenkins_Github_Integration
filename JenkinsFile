@@ -1,26 +1,24 @@
 pipeline {
-    agent any
+    agent any 
 
     stages {
-
-        stage ('test'){
-          steps {
-            echo 'testing'
-          }
-        }
-
-        stage ('fetch'){
+        stage('Fetch Code') {
             steps {
-                echo 'fetch'
+                echo 'Checking out code from GitHub...'
+                // Code is automatically fetched into the workspace by Jenkins
+                sh 'ls -la'
             }
-
         }
 
-        stage ('build'){
-         steps {
-            echo 'build'
-         }
-
+        stage('Deploy Website') {
+            steps {
+                echo 'Deploying index.html to Apache web directory...'
+                
+                // Copies index.html directly from the local Jenkins workspace to the Apache folder
+                sh 'sudo cp index.html /var/www/html/index.html'
+                
+                echo 'Deployment finished successfully!'
+            }
         }
     }
 }
