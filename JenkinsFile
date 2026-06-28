@@ -1,41 +1,26 @@
 pipeline {
-    agent any 
+    agent any
 
-        stages {
+    stages {
 
-            stage ('Build'){
-               steps {
-                echo 'building the pplication'
-               }
+        stage ('test'){
+          steps {
+            echo 'testing'
+          }
+        }
 
+        stage ('fetch'){
+            steps {
+                echo 'fetch'
             }
 
-            stage ('test') {
-                steps {
-                    echo 'testing the application'
-                }
-            }
-                stage ('deploy via ec2-console') {
+        }
 
-                    steps {
-        echo 'Telling EC2 instance to pull latest code from GitHub...'
-        
-        withCredentials([string(credentialsId: 'ec2_private_key_text', variable: 'RAW_KEY')]) {
-            sh '''
-                # 1. Write the secret text to a temporary key file
-                echo "$RAW_KEY" > my_ec2_key.pem
-                chmod 600 my_ec2_key.pem
-                
-                # 2. Run the SSH command using standard Linux tools
-                ssh -i my_ec2_key.pem -o StrictHostKeyChecking=no ec2-user@18.234.143.57 "cd /var/www/html && git pull origin main"
-                
-                # 3. Clean up the key file
-                rm -f my_ec2_key.pem
-            '''
+        stage (''build){
+         steps {
+            echo 'build'
+         }
+
         }
     }
-                }
-
-            }
-        
-    }
+}
