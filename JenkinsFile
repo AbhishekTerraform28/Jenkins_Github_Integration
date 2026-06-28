@@ -12,7 +12,7 @@ pipeline {
 
         stage('Deploy Website') {
             steps {
-                echo 'Deploying index.html to Apache web directory...'
+                echo 'Deploying index.html to Apache web directory....'
                 
                 // Copies index.html directly from the local Jenkins workspace to the Apache folder
                 sh 'sudo cp index.html /var/www/html/index.html'
