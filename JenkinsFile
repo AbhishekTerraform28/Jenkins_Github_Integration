@@ -1,24 +1,20 @@
 pipeline {
     agent any 
 
-    stages {
-        stage('Fetch Code') {
+    stage('Deploy Container') {
             steps {
-                echo 'Checking out code from GitHub...'
-                // Code is automatically fetched into the workspace by Jenkins
-               sh 'ls -la'
+                echo 'Building new Docker image...'
+                // 1. Build the docker image and tag it as 'my-web-app'
+                sh 'sudo docker build -t my-web-app .'
+                
+                echo 'Stopping old container if running...'
+                // 2. Stop and remove the old container if it exists so port 80 is free
+                sh 'sudo docker rm -f web-server-container || true'
+                
+                echo 'Starting new container...'
+                // 3. Run the new container on port 80
+                sh 'sudo docker run -d --name web-server-container -p 80:80 my-web-app'
             }
         }
 
-        stage('Deploy Website') {
-            steps {
-                echo 'Deploying index.html to Apache web directory....'
-                
-                // Copies index.html directly from the local Jenkins workspace to the Apache folder
-                sh 'sudo cp index.html /var/www/html/index.html'
-                
-                echo 'Deployment finished successfully!'
-            }
-        }
-    }
 }
