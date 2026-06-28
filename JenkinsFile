@@ -17,7 +17,7 @@ pipeline {
                 
                 echo 'Starting new container...'
                 // 3. Run the new container on port 80
-                sh 'sudo docker run -d --name web-server-container -p 82:82 my-web-app'
+                sh 'sudo docker run -d --name web-server-container -p 82:80 my-web-app'
             }
         }
 
