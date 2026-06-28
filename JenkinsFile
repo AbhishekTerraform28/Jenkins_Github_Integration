@@ -1,6 +1,10 @@
 pipeline {
     agent any 
 
+     stages {
+
+    
+
     stage('Deploy Container') {
             steps {
                 echo 'Building new Docker image...'
@@ -17,4 +21,5 @@ pipeline {
             }
         }
 
+ }
 }
