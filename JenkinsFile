@@ -15,11 +15,15 @@ pipeline {
                     echo 'testing the application'
                 }
             }
-                stage ('deploy') {
+                stage ('deploy via ec2-console') {
 
                     steps {
-                        echo 'deplying the application'
-                    }
+                      echo 'Telling EC2 instance to pull latest code from GitHub...'
+                         // Uses sshagent just to log in and execute a remote command
+                         sshagent(credentials: ['ec2-ssh-key']) {
+                          sh "ssh -o StrictHostKeyChecking=no ec2-user@18.234.143.57 'cd /var/www/html && git pull origin main'"
+        }
+    }
                 }
 
             }
