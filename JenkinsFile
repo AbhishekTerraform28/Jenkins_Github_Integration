@@ -1,52 +1,35 @@
-pipeline{
- agent any{
+pipeline {
+    agent any
 
-stages {
-
-
-stage('Continuous Integration (Build)') {
+    stages {
+        stage('Checkout Code') {
             steps {
-                // 1. Clone the repository into the workspace
-                git branch: 'main', url: 'https://github.com/AbhishekTerraform28/Jenkins_Github_Integration.git'
-                
-                // 2. Build the Docker image
+                echo 'Checking out code from repository'
+                checkout scm
+            }
+        }
+
+        stage('Continuous Integration (Build)') {
+            steps {
+                echo 'Building Docker image in workspace'
                 sh 'docker build -t my-web-image:latest .'
             }
         }
 
-stage (checkout from code repository){
-    steps{
-        echo 'checkout from code'
-        checkout scm
-    }
-}
-
-stage (build){
-    steps{
-        echo 'builidng the code in our workspace'
-        
-            }
-}
-
-
-stage(test){
-    steps{
-echo 'test the app'         
-    }
-}
-
-
- stage('Continuous Delivery (Approval Gate)') {
+        stage('Test') {
             steps {
-                // Pipeline pauses here waiting for manual approval
+                echo 'Testing the application'
+            }
+        }
+
+        stage('Continuous Delivery (Approval Gate)') {
+            steps {
                 input message: 'Do you want to deploy this build to Production?', ok: 'Deploy'
             }
         }
 
-
-    stage('Deploy to Production') {
+        stage('Deploy to Production') {
             steps {
-                // Runs only after "Deploy" is clicked
                 sh '''
                     docker stop my-web-app || true
                     docker rm my-web-app || true
@@ -54,19 +37,14 @@ echo 'test the app'
                 '''
             }
         }
-
-post{
-    success {
-        echo 'pipline deployment success'
     }
 
-
-    failure {
-        echo 'deployemnt failed'
+    post {
+        success {
+            echo 'Pipeline deployment succeeded'
+        }
+        failure {
+            echo 'Deployment failed'
+        }
     }
-}
-
-
-}
- }
 }
