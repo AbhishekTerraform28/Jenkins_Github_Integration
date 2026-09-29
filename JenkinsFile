@@ -1,50 +1,56 @@
-pipeline {
+pipeline{
     agent any
 
-    stages {
-        stage('Checkout Code') {
-            steps {
-                echo 'Checking out code from repository'
-                checkout scm
-            }
-        }
+stages{
 
-        stage('Continuous Integration (Build)') {
-            steps {
+stage('checkout'){
+    steps{
+        echo 'checkout from code'
+        checkout scm
+    }
+}
+
+stage('test'){
+    steps{
+        echo 'test from code'
+        //checkout scm
+    }
+}
+
+stage('build'){
+    steps {
                 echo 'Building Docker image in workspace'
                 sh 'docker build -t my-web-image:latest .'
             }
-        }
+}
 
-        stage('Test') {
-            steps {
-                echo 'Testing the application'
-            }
-        }
-
-        stage('Continuous Delivery (Approval Gate)') {
+stage('Continuous Delivery (Approval Gate)') {
             steps {
                 input message: 'Do you want to deploy this build to Production?', ok: 'Deploy'
             }
         }
-
-        stage('Deploy to Production') {
-            steps {
+ 
+stage('deploy'){
+    steps {
                 sh '''
                     docker stop my-web-app || true
                     docker rm my-web-app || true
                     docker run -d --name my-web-app -p 8081:80 my-web-image:latest
                 '''
             }
-        }
+}
+
+
+}
+
+post{
+    success {
+        echo 'success deployment done'
     }
 
-    post {
-        success {
-            echo 'Pipeline deployment succeeded'
-        }
-        failure {
-            echo 'Deployment failed'
-        }
+    failure {
+        echo 'failed at deployment'
     }
+}
+
 }
