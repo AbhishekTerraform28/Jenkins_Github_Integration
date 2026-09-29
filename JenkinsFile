@@ -1,25 +1,72 @@
-pipeline {
-    agent any 
+pipeline{
+ agent any{
 
-     stages {
+stages {
 
-    
 
-    stage('Deploy Container') {
+stage('Continuous Integration (Build)') {
             steps {
-                echo 'Building new Docker image...'
-                // 1. Build the docker image and tag it as 'my-web-app'
-                sh 'sudo docker build -t my-web-app .'
+                // 1. Clone the repository into the workspace
+                git branch: 'main', url: 'https://github.com/AbhishekTerraform28/Jenkins_Github_Integration.git'
                 
-                echo 'Stopping old container if running...'
-                // 2. Stop and remove the old container if it exists so port 80 is free
-                sh 'sudo docker rm -f web-server-container || true'
-                
-                echo 'Starting new container...'
-                // 3. Run the new container on port 80
-                sh 'sudo docker run -d --name web-server-container -p 82:80 my-web-app'
+                // 2. Build the Docker image
+                sh 'docker build -t my-web-image:latest .'
             }
         }
 
+stage (checkout from code repository){
+    steps{
+        echo 'checkout from code'
+        checkout scm
+    }
+}
+
+stage (build){
+    steps{
+        echo 'builidng the code in our workspace'
+        
+            }
+}
+
+
+stage(test){
+    steps{
+echo 'test the app'         
+    }
+}
+
+
+ stage('Continuous Delivery (Approval Gate)') {
+            steps {
+                // Pipeline pauses here waiting for manual approval
+                input message: 'Do you want to deploy this build to Production?', ok: 'Deploy'
+            }
+        }
+
+
+    stage('Deploy to Production') {
+            steps {
+                // Runs only after "Deploy" is clicked
+                sh '''
+                    docker stop my-web-app || true
+                    docker rm my-web-app || true
+                    docker run -d --name my-web-app -p 8081:80 my-web-image:latest
+                '''
+            }
+        }
+
+post{
+    success {
+        echo 'pipline deployment success'
+    }
+
+
+    failure {
+        echo 'deployemnt failed'
+    }
+}
+
+
+}
  }
 }
